@@ -128,9 +128,10 @@ export default class Demo {
                 this.addToStage(anim);
                 this.anim = anim;
 
-               // this.addTween().addControl(anim).do({y:[50, 1500], alpha: [0.5, 1], rotation: [50, 10]}, Tween.BounceIn).start(5000, undefined,-1);
+                //this.addTween().addControl(anim).do({x:[50, 1500], alpha: [0.5, 1], rotation: [0, 5]}, Tween.Linear).start(5000, undefined,-1);
                 //this.addTween().addControl(anim).do({x:[50, 1500], width: [-100, 500]}, Tween.Linear).start(6000, undefined,-1);
-                this.addTween().addControl(anim).do({y:[50, 700]}, Tween.BounceOut).do({x:[50, 1500]}, Tween.Linear).start(5000, undefined,-1);
+               // this.addTween().addControl(anim).do({y:[50, 700]}, Tween.BounceOut).do({x:[50, 1500]}, Tween.Linear).start(5000, undefined,-1);
+               this.addTween().addControl(anim).do({y:[100, 300]}, Tween.Linear).start(1000, undefined,-1);
 
 
 
