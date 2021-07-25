@@ -2,8 +2,10 @@ import "./scss/main.scss";
 import * as PIXI from "pixi.js-legacy";
 import Handlers from "./utils/handlers";
 import Demo from "./demo/Demo";
-import Lift from "./lift/Lift";
-import SlotMachine from "./slot-machine/slot-machine";
+import SlotMachine from "./slot-machine/slot-machine"
+import SpineBoy from "./Shooter/SpineBoy"
+import Shooter from "./Shooter/shooter";
+import ShooterGame from "./Shooter/ShooterGame";
 
 initPIXI();
 const handlers = new Handlers();
@@ -13,15 +15,19 @@ start();
 /**
  * Инициализация PIXI
  */
-function start() : void {
-   // const lift = new Lift();
-//    const demo = new Demo();
-//    demo.start();
+function start(): void {
+    // const demo = new Demo();
+    // demo.start();
+    //  const slotM = new SlotMachine();
 
-   const slotMachine = new SlotMachine();
+    // const spineBoy = new SpineBoy();
+    // spineBoy.start();
 
+    // const shooter = new Shooter();
+    // shooter.start();
+
+    const shooterGame = new ShooterGame();
 }
-
 
 function initPIXI(): void {
     window.PIXI = PIXI;
@@ -38,7 +44,7 @@ function initPIXI(): void {
         height: window.sceneHeight,
         ///transparent: true,
         forceCanvas: true,
-        backgroundColor: 0xFFFFFF,
+        backgroundColor: 0x00ff00,
         view: <HTMLCanvasElement>getElement("scene")
     });
     window.renderer = app.renderer;
@@ -53,4 +59,3 @@ function getElement(elementName: string): HTMLElement {
 document.onready = function () {
     window.sizeHandler();
 };
-

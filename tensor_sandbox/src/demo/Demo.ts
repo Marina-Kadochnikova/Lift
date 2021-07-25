@@ -4,6 +4,8 @@ import Idle2 from "./states/Idle2";
 import Idle3 from "./states/Idle3";
 import Rotate from "./states/Rotate";
 import Tween from "./Tween";
+import {Howl, Howler} from 'howler';
+import {Spine} from 'pixi-spine';
 
 export default class Demo {
     private _currentState: AbstractState;
@@ -13,10 +15,12 @@ export default class Demo {
     public idle3: AbstractState;
     public rotate: AbstractState;
 
+    public sounds: Howl;
+
     public background: PIXI.Sprite;
     public anim: PIXI.Sprite;
-    //public anim2: PIXI.Sprite;
     public editButton: PIXI.Sprite;
+    public spineAnim: Spine;
 
     public tweens: Tween[];
 
@@ -31,6 +35,7 @@ export default class Demo {
         this.background = this.makeBg();
         this.editButton = this.makeEditBtn();
         this.addFighter();
+        //this.addSpineBoy();
     }
 
     set currentState(state: AbstractState) {
@@ -54,6 +59,10 @@ export default class Demo {
         } else {
             this.currentState = this.rotate;
         }
+
+        if (this.sounds) {
+            this.sounds.play('click');
+        }
     }
 
     start() {
@@ -70,6 +79,10 @@ export default class Demo {
             for (let i = 0; i < this.tweens.length; i++) {
                 this.tweens[i].update(window.app.ticker.elapsedMS);
             }
+        }
+
+        if (this.spineAnim) {
+            this.spineAnim.update(window.app.ticker.elapsedMS / 1000)
         }
     }
 
@@ -98,10 +111,53 @@ export default class Demo {
         return tween;
     }
 
+    addSpineBoy(): void {
+        window.app.loader
+            .add('spineCharacter', 'assets/spineboy-pro.json')
+            .load((loader, resources) => {
+                const animation = new Spine(resources.spineCharacter.spineData);
+                animation.x = window.app.screen.width / 2;
+                animation.y = window.app.screen.height ;
+                animation.scale.set(0.5);
+
+                // animation.y = window.app.screen.height / 3 * 2;
+                // add the animation to the scene and render...
+                this.addToStage(animation);
+
+                animation.state.setAnimation(1, 'portal', false);
+                animation.state.setAnimation(0, 'aim', true);
+
+                animation.state.timeScale = 0.5;
+
+                this.spineAnim = animation;
+                window.app.stage.interactive = true;
+                window.app.stage.on('pointerdown', () =>{
+                    animation.state.setAnimation(3, 'run', true);
+
+                });
+
+
+
+                // if (animation.state.hasAnimation('aim') &&
+                //     animation.state.hasAnimation('run')) {
+                //     // run forever, little boy!
+                //     animation.state.setAnimation(0, 'aim', true);
+                //     animation.state.setAnimation(1, 'run', true);
+                //     // dont run too fast
+                //     animation.state.timeScale = 0.5;
+                //     console.warn(animation);
+                //     this.spineAnim = animation;
+                // }
+            });
+    }
+
     addFighter(): void {
         window.app.loader
             .add('assets/fighter.json')
             .load(() => {
+                // load sounds after main resources
+                this.loadSounds();
+
                 // create an array of textures from an image path
                 const frames = [];
 
@@ -128,13 +184,16 @@ export default class Demo {
                 this.addToStage(anim);
                 this.anim = anim;
 
-                //this.addTween().addControl(anim).do({x:[50, 1500], alpha: [0.5, 1], rotation: [0, 5]}, Tween.Linear).start(5000, undefined,-1);
-                //this.addTween().addControl(anim).do({x:[50, 1500], width: [-100, 500]}, Tween.Linear).start(6000, undefined,-1);
-               // this.addTween().addControl(anim).do({y:[50, 700]}, Tween.BounceOut).do({x:[50, 1500]}, Tween.Linear).start(5000, undefined,-1);
-               this.addTween().addControl(anim).do({y:[100, 300]}, Tween.Linear).start(1000, undefined,-1);
+                this.addTween().addControl(anim).do({width:[50, 1500]}).start(3000,undefined,-1);
+            });
+    }
 
-
-
+    loadSounds() {
+        const sounds = 'assets/allsounds.json';
+        window.app.loader
+            .add(sounds)
+            .load((loader, resources) => {
+                this.sounds = new Howl(resources[sounds].data);
             });
     }
 
