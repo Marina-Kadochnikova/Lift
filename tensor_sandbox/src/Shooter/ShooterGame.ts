@@ -295,7 +295,7 @@ export default class ShooterGame{
             this.currentBull.visible = true;
 
             this.addTween().addControl(this.currentBull)
-                .do({x:[this.spineBoy.hitBox.x, 1000], y:[550, 300]}).start(200, ()=>{
+                .do({x:[this.spineBoy.hitBox.x, 1000], y:[this.spineBoy.hitBox.y + 100, 250]}).start(200, ()=>{
                     this.currentBull.x = this.spineBoy.hitBox.x;
                     this.currentBull.y = 550; 
                     this.spineBoy.spineAnim.state.addEmptyAnimation(1, 1, 0); 

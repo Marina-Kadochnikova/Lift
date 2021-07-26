@@ -12,9 +12,9 @@ export default class Bullet{
     create(){
         const texture = PIXI.Texture.from('assets/bullet.png');
         this.bullet = new PIXI.Sprite(texture);
-        this.bullet.width = 50;
-        this.bullet.height = 50;
-        this.bullet.rotation = 5.6;
+        this.bullet.width = 70;
+        this.bullet.height = 70;
+        // this.bullet.rotation = 5.6;
         this.bullet.visible = false;
         window.app.stage.addChild(this.bullet);
     }
