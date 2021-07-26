@@ -18,11 +18,10 @@ export default class ShooterGame{
     public tweens: Tween[];
     public background: PIXI.TilingSprite;
 
-
     public isLife: boolean;
     public isBoxOnScreen: boolean;
     public isEnemyOnScreen: boolean;
-    public isBullOnScreen: boolean;
+    public isBullOnScreen: boolean = false;
     public isJump: boolean;
     public currentBox: PIXI.Sprite;
     public currentEnemy: Enemy;
@@ -30,7 +29,6 @@ export default class ShooterGame{
     public score: number;
     public textScore: PIXI.Text;
     public isGameStart: boolean = false;
-    public interval: NodeJS.Timeout;
 
 
     constructor(){
@@ -43,16 +41,9 @@ export default class ShooterGame{
         });
         this.makeBg();
         this.button = new Button(this);
-        this.score = 0;
+        this.button.createGameOvBanner();
+        this.newGame();
         this.createScore();
-        this.button.gameov();
-        this.isLife = false;
-        this.isBoxOnScreen = false;
-        this.isEnemyOnScreen = false;
-        this.isBullOnScreen = false;
-        this.isJump = false;
-        this.tweens = [];
-
         document.addEventListener('keydown', (e) => this.onKeyPress(e)) 
     }
 
@@ -102,6 +93,28 @@ export default class ShooterGame{
         window.app.stage.addChild(this.background);
     }
 
+    newGame(){
+        this.score = 0;
+        this.tweens = [];
+        this.isLife = false;
+        this.isJump = false;
+
+        if (this.isBoxOnScreen){
+            this.isBoxOnScreen = false;
+            this.currentBox.x = window.app.screen.width; 
+            this.currentBox.visible = false; 
+            this.currentBox.height = 150;
+        }
+
+        if (this.isEnemyOnScreen){
+            this.isEnemyOnScreen = false;
+            this.currentEnemy.enemy.x = window.app.screen.width; 
+            this.currentEnemy.enemy.visible = false; 
+            this.currentEnemy.rectM.x = window.app.screen.width;
+        }
+
+    }
+
     start() {
         this.isGameStart = true;
         this.spineBoy.spineAnim.visible = true;
@@ -115,7 +128,6 @@ export default class ShooterGame{
 
     update() {
         if (this.isLife) {
-
             this.score += 1/100;
             this.textScore.text = Math.round(this.score).toString();
 
@@ -146,30 +158,20 @@ export default class ShooterGame{
         }
     }
 
-    restart(){
-        this.tweens = [];
-        this.currentBox.x = window.app.screen.width; 
-        this.currentBox.visible = false; 
-        this.currentBox.height = 150;
-        this.isBoxOnScreen = false;
-
-        this.currentEnemy.enemy.x = window.app.screen.width; 
-        this.currentEnemy.enemy.visible = false; 
-        this.isEnemyOnScreen = false;
-
-        this.currentEnemy.rectM.x = window.app.screen.width;
-
+    restartGame(){
+        this.newGame();
         this.spineBoy.healthLine.visible = true;
         this.textScore.visible = true;
         this.spineBoy.health = 300;
         this.spineBoy.changeHealth(0);
-        this.score = 0;
         this.textScore.text = this.score.toString();
         this.addStartAnimation();
     }
 
+
     addStartAnimation(){
-        let start = this.newGame.bind(this)
+        this.spineBoy.hitBox.y = window.app.screen.width / 3.6;
+        let start = this.startNewGame.bind(this)
         this.spineBoy.spineAnim.state.setAnimation(0, 'portal', false);
         this.spineBoy.spineAnim.state.tracks[0].listener = {
             complete: function (trackEntry, count) {
@@ -182,10 +184,18 @@ export default class ShooterGame{
         }
     }
 
-    newGame(){
+    startNewGame(){
         this.spineBoy.spineAnim.state.addAnimation(0, 'run', true, 0).mixDuration = 0.2;
         this.isLife = true;
         this.newHindrance();
+    }
+
+    gameOver(){
+        this.currentEnemy.enemy.visible = false;
+        this.spineBoy.healthLine.visible = false;
+        this.textScore.visible = false;
+        this.button.finalScore.text = this.textScore.text;
+        this.button.banner.visible = true;
     }
 
     newHindrance() {
@@ -199,7 +209,7 @@ export default class ShooterGame{
             setTimeout(() => {
                 this.newHindrance();
 
-            }, Math.random() * 2000);
+            }, Math.random() * 1500);
         }
     }
 
@@ -213,7 +223,8 @@ export default class ShooterGame{
                 .do({x:[this.currentBox.x, -200]})
                 .start(1800, ()=> {
                     this.currentBox.x = window.app.screen.width; 
-                    this.currentBox.visible = false; 
+                    this.currentBox.visible = false;
+                    this.currentBox.height = 150; 
                     this.isBoxOnScreen = false;}, 1);
         }
     }
@@ -239,10 +250,9 @@ export default class ShooterGame{
 
     checkDamage(item: PIXI.Sprite){
         if(this.spineBoy.spineAnim && Collision.checkCollision(this.spineBoy.hitBox, item)) {
-            let height = item.height
             this.addTween().addControl(item)
                 .do({height:[item.height, 0]}, Tween.Linear)
-                .start(300, ()=> {item.height = height; }, 1);
+                .start(300,undefined, 1);
             this.spineBoy.changeHealth(5);
         }
     }
@@ -259,14 +269,6 @@ export default class ShooterGame{
             this.isBullOnScreen = false;
             this.score += 20;
         }
-    }
-
-    gameOver(){
-        this.currentEnemy.enemy.visible = false;
-        this.spineBoy.healthLine.visible = false;
-        this.textScore.visible = false;
-        this.button.finalScore.text = this.textScore.text;
-        this.button.over.visible = true;
     }
 
     onKeyPress(e: KeyboardEvent) {

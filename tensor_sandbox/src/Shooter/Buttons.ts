@@ -4,7 +4,7 @@ export default class Button{
     protected parent: ShooterGame;
     private button: PIXI.Sprite;
     public restart: PIXI.Sprite;
-    public over: PIXI.Graphics;
+    public banner: PIXI.Graphics;
     public finalScore: PIXI.Text;
 
     private textStyle: PIXI.TextStyle;
@@ -29,21 +29,21 @@ export default class Button{
         this.button.y = 10;
         this.button.interactive = true;
         this.button.buttonMode = true;
-        this.button.on('pointerdown', this.onStartBtnDown.bind(this));
+        this.button.on('pointerdown', this.onButtonDown.bind(this));
         window.app.stage.addChild(this.button);
     }
 
-    onStartBtnDown(){
+    onButtonDown(){
         this.button.visible = false;
         if(!this.parent.isGameStart){
             this.parent.start();
         } else{
-            this.over.visible = false;
-            this.parent.restart();
+            this.banner.visible = false;
+            this.parent.restartGame();
         }
     }
 
-    gameov(){
+    createGameOvBanner(){
         let gameover = new PIXI.Text("GAME OVER", this.textStyle);
         gameover.x = 550;
         gameover.y = 250;
@@ -64,15 +64,15 @@ export default class Button{
         this.restart.y = window.app.screen.height / 2.2;
         this.restart.interactive = true;
         this.restart.buttonMode = true;
-        this.restart.on('pointerdown', this.onStartBtnDown.bind(this));
+        this.restart.on('pointerdown', this.onButtonDown.bind(this));
 
-        this.over = new PIXI.Graphics();
-        this.over.lineStyle(8, 0xFF00FF, 1);
-        this.over.beginFill(0x650A5A, 0.8);
-        this.over.drawRect(window.app.screen.width/4, window.app.screen.height/4, 700, 300);
-        this.over.endFill();
-        this.over.addChild(this.finalScore, this.restart, gameover, score);
-        this.over.visible = false;
-        window.app.stage.addChild(this.over);
+        this.banner = new PIXI.Graphics();
+        this.banner.lineStyle(8, 0xFF00FF, 1);
+        this.banner.beginFill(0x650A5A, 0.8);
+        this.banner.drawRect(window.app.screen.width/4, window.app.screen.height/4, 700, 300);
+        this.banner.endFill();
+        this.banner.addChild(this.finalScore, this.restart, gameover, score);
+        this.banner.visible = false;
+        window.app.stage.addChild(this.banner);
     }
 }
