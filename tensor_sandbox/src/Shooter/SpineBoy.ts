@@ -23,21 +23,21 @@ export default class SpineBoy{
     changeHealth(damage: number){
         this.health -= damage
         this.mask.clear();
-        this.mask.drawRect(500, 15, this.health, 20);
+        this.mask.drawRect(300, 50, this.health, 30);
         this.healthLine.mask = this.mask;
     }
 
     createHealth(){
         this.healthLine = new PIXI.Graphics();
         this.healthLine.beginFill(0xDE3249);
-        this.healthLine.drawRect(500, 15, this.health, 20);
+        this.healthLine.drawRect(300, 50, this.health, 30);
         this.healthLine.endFill();
         window.app.stage.addChild(this.healthLine);
 
         let graphics = new PIXI.Graphics();
         graphics.lineStyle(2, 0xFF00FF, 1);
         graphics.beginFill(0x650A5A, 0.25);
-        graphics.drawRoundedRect(495, 10, this.health + 10, 30, 16);
+        graphics.drawRoundedRect(295, 45, this.health + 10, 40, 16);
         graphics.endFill();
         window.app.stage.addChild(graphics);
     }
@@ -45,7 +45,7 @@ export default class SpineBoy{
     createMask(){
         this.mask = new PIXI.Graphics();
         this.mask.clear();
-        this.mask.drawRect(500, 15, this.health, 20);
+        this.mask.drawRect(300, 50, this.health, 30);
         this.healthLine.mask = this.mask;
         window.app.stage.addChild(this.mask);
     }

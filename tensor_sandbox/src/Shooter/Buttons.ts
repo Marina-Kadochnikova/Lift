@@ -21,12 +21,12 @@ export default class Button{
     }
 
     create(){
-        const texture = PIXI.Texture.from('assets/button1.png');
+        const texture = PIXI.Texture.from('assets/start.png');
         this.button = new PIXI.Sprite(texture);
         this.button.scale.y = 0.5;
         this.button.scale.x = 0.5;
-        this.button.x = 0;
-        this.button.y = 0;
+        this.button.x = 10;
+        this.button.y = 10;
         this.button.interactive = true;
         this.button.buttonMode = true;
         this.button.on('pointerdown', this.onStartBtnDown.bind(this));

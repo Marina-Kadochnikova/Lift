@@ -13,7 +13,7 @@ export default class Monster{
 
     create(){
         this.enemy.x = window.app.screen.width;
-        this.enemy.y = window.app.screen.height/3.5;
+        this.enemy.y = window.app.screen.height/3;
         this.enemy.height = 200;
         this.enemy.width = 200;
         this.enemy.visible = false;
@@ -21,7 +21,7 @@ export default class Monster{
 
         let rect = new PIXI.Sprite(PIXI.Texture.WHITE);
         rect.x = window.app.screen.width;
-        rect.y = 150;
+        rect.y = 160;
         rect.width = 200;
         rect.height = 200;
         rect.visible = false;

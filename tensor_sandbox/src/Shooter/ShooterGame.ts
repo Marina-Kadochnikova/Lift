@@ -1,4 +1,4 @@
-import Button from "./Button";
+import Button from "./Buttons";
 import Box from "./Box";
 import Bullet from "./Bullet";
 import Enemy from "./Enemy";
@@ -81,13 +81,12 @@ export default class ShooterGame{
     }
 
     createScore(){
-        this.textScore = new PIXI.Text(this.score.toString(), 
-                    { fontFamily: 'Arial',
-                     fontSize: 35,
+        this.textScore = new PIXI.Text(this.score.toString(),
+                    {fontSize: 45,
                      fontWeight: 'bold',
                      fill: 0xFF00FF });
-        this.textScore.x = 900;
-        this.textScore.y = 10;
+        this.textScore.x = 700;
+        this.textScore.y = 38;
         window.app.stage.addChild(this.textScore);
     }
 
@@ -138,17 +137,14 @@ export default class ShooterGame{
 
             if (this.isEnemyOnScreen){
                 this.checkHitEnemy();
+                this.checkDamage(this.currentEnemy.rectM);
             }
-
         }
 
         if (this.spineBoy.spineAnim) {
             this.spineBoy.spineAnim.update(window.app.ticker.elapsedMS / 1000);
-            
         }
-
     }
-
 
     restart(){
         this.tweens = [];
@@ -236,24 +232,30 @@ export default class ShooterGame{
 
             this.addTween().addControl(this.currentEnemy.rectM)
                 .do({x:[this.currentEnemy.enemy.x - 100, -200]})
-                .start(2000, ()=>{this.currentEnemy.rectM.x = window.app.screen.width;}, 1);
+                .start(2000, ()=>{this.currentEnemy.rectM.x = window.app.screen.width;
+                                 this.currentEnemy.rectM.height = 200;}, 1);
         }
     }
 
     checkDamage(item: PIXI.Sprite){
         if(this.spineBoy.spineAnim && Collision.checkCollision(this.spineBoy.hitBox, item)) {
+            let height = item.height
             this.addTween().addControl(item)
                 .do({height:[item.height, 0]}, Tween.Linear)
-                .start(500, ()=> {item.height = 150; }, 1);
+                .start(300, ()=> {item.height = height; }, 1);
             this.spineBoy.changeHealth(5);
         }
     }
 
     checkHitEnemy(){
         if (this.spineBoy.spineAnim && this.isBullOnScreen && Collision.checkCollision(this.currentEnemy.rectM, this.currentBull)) {
+            this.addTween().addControl(this.currentEnemy.rectM).do({height:[this.currentEnemy.rectM.height,0]})
+                .start(100, undefined, 1);
+
             this.addTween().addControl(this.currentEnemy.enemy).do({height:[this.currentEnemy.enemy.height, 0]})
-                .start(200, ()=>{this.currentEnemy.enemy.height = 200; 
-                                this.currentEnemy.enemy.visible = false;}, 1);
+                .start(100, ()=>{this.currentEnemy.enemy.height = 200; 
+                                this.currentEnemy.enemy.visible = false;
+                                }, 1);
             this.isBullOnScreen = false;
             this.score += 20;
         }
@@ -296,7 +298,6 @@ export default class ShooterGame{
                     this.currentBull.y = 550; 
                     this.spineBoy.spineAnim.state.addEmptyAnimation(1, 1, 0); 
                     this.currentBull.visible = false}, 1);
-            // this.checkHitEnemy();
         }
     }
 }
