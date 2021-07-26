@@ -15,7 +15,8 @@ export default class Box{
         this.box.width = 150;
         this.box.height = 150;
         this.box.x = window.app.screen.width;
-        this.box.y = window.app.screen.height / 1.45;
+        this.box.y = window.app.screen.height/1.19;
+        this.box.anchor.set(1);
         this.box.visible = false;
         window.app.stage.addChild(this.box);
     }

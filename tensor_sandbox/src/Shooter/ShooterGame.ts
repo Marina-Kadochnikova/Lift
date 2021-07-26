@@ -116,6 +116,7 @@ export default class ShooterGame{
 
     update() {
         if (this.isLife) {
+
             this.score += 1/100;
             this.textScore.text = Math.round(this.score).toString();
 
@@ -130,10 +131,20 @@ export default class ShooterGame{
             }
             
             this.background.tilePosition.x -= window.app.ticker.elapsedMS;
+
+            if (this.isBoxOnScreen){
+                this.checkDamage(this.currentBox);
+            }
+
+            if (this.isEnemyOnScreen){
+                this.checkHitEnemy();
+            }
+
         }
 
         if (this.spineBoy.spineAnim) {
-            this.spineBoy.spineAnim.update(window.app.ticker.elapsedMS / 1000)
+            this.spineBoy.spineAnim.update(window.app.ticker.elapsedMS / 1000);
+            
         }
 
     }
@@ -143,6 +154,7 @@ export default class ShooterGame{
         this.tweens = [];
         this.currentBox.x = window.app.screen.width; 
         this.currentBox.visible = false; 
+        this.currentBox.height = 150;
         this.isBoxOnScreen = false;
 
         this.currentEnemy.enemy.x = window.app.screen.width; 
@@ -207,7 +219,6 @@ export default class ShooterGame{
                     this.currentBox.x = window.app.screen.width; 
                     this.currentBox.visible = false; 
                     this.isBoxOnScreen = false;}, 1);
-           this.checkDamage(this.currentBox);
         }
     }
 
@@ -230,26 +241,22 @@ export default class ShooterGame{
     }
 
     checkDamage(item: PIXI.Sprite){
-        setInterval(()=>{
-            if(this.spineBoy.spineAnim && Collision.checkCollision(this.spineBoy.hitBox, item)) {
-                this.addTween().addControl(item)
-                    .do({height:[item.height, 0], y:[item.y, item.y + item.width]}, Tween.Linear)
-                    .start(500, ()=> {item.height = 150; item.y = window.app.screen.height / 1.45;}, 1);
-                this.spineBoy.changeHealth(100);
-            }
-        }, 300);
+        if(this.spineBoy.spineAnim && Collision.checkCollision(this.spineBoy.hitBox, item)) {
+            this.addTween().addControl(item)
+                .do({height:[item.height, 0]}, Tween.Linear)
+                .start(500, ()=> {item.height = 150; }, 1);
+            this.spineBoy.changeHealth(5);
+        }
     }
 
     checkHitEnemy(){
-        setInterval(()=>{
-            if (this.spineBoy.spineAnim && this.isBullOnScreen && Collision.checkCollision(this.currentEnemy.rectM, this.currentBull)) {
-                this.addTween().addControl(this.currentEnemy.enemy).do({height:[this.currentEnemy.enemy.height, 0]})
-                    .start(200, ()=>{this.currentEnemy.enemy.height = 200; 
-                                    this.currentEnemy.enemy.visible = false;}, 1);
-                this.isBullOnScreen = false;
-                this.score += 20;
-            }
-        }, 100);
+        if (this.spineBoy.spineAnim && this.isBullOnScreen && Collision.checkCollision(this.currentEnemy.rectM, this.currentBull)) {
+            this.addTween().addControl(this.currentEnemy.enemy).do({height:[this.currentEnemy.enemy.height, 0]})
+                .start(200, ()=>{this.currentEnemy.enemy.height = 200; 
+                                this.currentEnemy.enemy.visible = false;}, 1);
+            this.isBullOnScreen = false;
+            this.score += 20;
+        }
     }
 
     gameOver(){
@@ -289,7 +296,7 @@ export default class ShooterGame{
                     this.currentBull.y = 550; 
                     this.spineBoy.spineAnim.state.addEmptyAnimation(1, 1, 0); 
                     this.currentBull.visible = false}, 1);
-            this.checkHitEnemy();
+            // this.checkHitEnemy();
         }
     }
 }
