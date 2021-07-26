@@ -29,7 +29,8 @@ export default class ShooterGame{
     public currentBull: PIXI.Sprite;
     public score: number;
     public textScore: PIXI.Text;
-
+    public isGameStart: boolean = false;
+    public interval: NodeJS.Timeout;
 
 
     constructor(){
@@ -103,19 +104,9 @@ export default class ShooterGame{
     }
 
     start() {
+        this.isGameStart = true;
         this.spineBoy.spineAnim.visible = true;
-        let start = this.newGame.bind(this)
-        this.spineBoy.spineAnim.state.setAnimation(0, 'portal', false);
-        this.spineBoy.spineAnim.state.tracks[0].listener = {
-            complete: function (trackEntry, count) {
-                if ('portal' === trackEntry.animation.name) {
-                    this.started = false;
-                    if (this.callback) {
-                        this.callback();
-                    }
-                }
-            }, callback: start
-        };
+        this.addStartAnimation();
 
         window.app.ticker.add(() => {
             this.update();
@@ -125,7 +116,8 @@ export default class ShooterGame{
 
     update() {
         if (this.isLife) {
-            this.textScore.text = this.score.toString();
+            this.score += 1/100;
+            this.textScore.text = Math.round(this.score).toString();
 
             if (this.spineBoy.health === 0) {
                 this.isLife = false;
@@ -137,13 +129,49 @@ export default class ShooterGame{
                 this.tweens[i].update(window.app.ticker.elapsedMS);
             }
             
-            this.background.tilePosition.x -= window.app.ticker.elapsedMS; //1000 * 800;
+            this.background.tilePosition.x -= window.app.ticker.elapsedMS;
         }
 
         if (this.spineBoy.spineAnim) {
             this.spineBoy.spineAnim.update(window.app.ticker.elapsedMS / 1000)
         }
 
+    }
+
+
+    restart(){
+        this.tweens = [];
+        this.currentBox.x = window.app.screen.width; 
+        this.currentBox.visible = false; 
+        this.isBoxOnScreen = false;
+
+        this.currentEnemy.enemy.x = window.app.screen.width; 
+        this.currentEnemy.enemy.visible = false; 
+        this.isEnemyOnScreen = false;
+
+        this.currentEnemy.rectM.x = window.app.screen.width;
+
+        this.spineBoy.healthLine.visible = true;
+        this.textScore.visible = true;
+        this.spineBoy.health = 300;
+        this.spineBoy.changeHealth(0);
+        this.score = 0;
+        this.textScore.text = this.score.toString();
+        this.addStartAnimation();
+    }
+
+    addStartAnimation(){
+        let start = this.newGame.bind(this)
+        this.spineBoy.spineAnim.state.setAnimation(0, 'portal', false);
+        this.spineBoy.spineAnim.state.tracks[0].listener = {
+            complete: function (trackEntry, count) {
+                if ('portal' === trackEntry.animation.name) {
+                    if (this.callback) {
+                        this.callback();
+                    }
+                }
+            }, callback: start
+        }
     }
 
     newGame(){
@@ -179,7 +207,7 @@ export default class ShooterGame{
                     this.currentBox.x = window.app.screen.width; 
                     this.currentBox.visible = false; 
                     this.isBoxOnScreen = false;}, 1);
-            this.checkDamage(this.currentBox);
+           this.checkDamage(this.currentBox);
         }
     }
 
@@ -208,8 +236,6 @@ export default class ShooterGame{
                     .do({height:[item.height, 0], y:[item.y, item.y + item.width]}, Tween.Linear)
                     .start(500, ()=> {item.height = 150; item.y = window.app.screen.height / 1.45;}, 1);
                 this.spineBoy.changeHealth(100);
-            } else {
-                this.score += 5;
             }
         }, 300);
     }
@@ -230,7 +256,7 @@ export default class ShooterGame{
         this.currentEnemy.enemy.visible = false;
         this.spineBoy.healthLine.visible = false;
         this.textScore.visible = false;
-        this.button.finalScore.text += this.textScore.text;
+        this.button.finalScore.text = this.textScore.text;
         this.button.over.visible = true;
     }
 
