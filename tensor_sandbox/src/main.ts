@@ -6,6 +6,7 @@ import SlotMachine from "./slot-machine/slot-machine"
 import SpineBoy from "./Shooter/SpineBoy"
 import Shooter from "./Shooter/shooter";
 import ShooterGame from "./Shooter/ShooterGame";
+import Lift from "./lift/Lift";
 
 initPIXI();
 const handlers = new Handlers();
@@ -20,13 +21,10 @@ function start(): void {
     // demo.start();
     //  const slotM = new SlotMachine();
 
-    // const spineBoy = new SpineBoy();
-    // spineBoy.start();
 
-    // const shooter = new Shooter();
-    // shooter.start();
+    const lift = new Lift();
 
-    const shooterGame = new ShooterGame();
+    // const shooterGame = new ShooterGame();
 }
 
 function initPIXI(): void {

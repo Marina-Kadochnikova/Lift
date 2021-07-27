@@ -10,6 +10,7 @@ export default class Controller{
     private firstFloor: Button;
     private task: Button;
     private onNeedFloor: boolean;
+    private open: boolean = false;
     
     constructor(parent: any){
         this.parent = parent;
@@ -61,6 +62,11 @@ export default class Controller{
                 this.task = this.currentQueue()[0];
                 this.update(dt);
                 this.stop();
+
+            }
+            if (this.onNeedFloor){
+                this.openDoor(dt);
+                this.closeDoor(dt);
             }
             
             if (this.currentQueue.length === 0 && this.queueUp.length === 0 && this.queueDown.length ===0 && this.currentFloor !== this.firstFloor){
@@ -69,23 +75,44 @@ export default class Controller{
         });
     }
 
+    openDoor(dt: number){
+        if(!this.open && this.parent.cabin.cabin.x <= this.parent.cabin.doors[0].x + this.parent.cabin.doors[0].width){
+            this.parent.cabin.doors[0].width -= dt;
+            this.parent.cabin.doors[1].width -=dt;
+        } 
+
+        if(Math.round(this.parent.cabin.doors[0].width) === 0){
+            this.open = true;
+        }
+    }
+    closeDoor(dt:number){
+        if(this.open && this.parent.cabin.doors[0].width < 38){
+            this.parent.cabin.doors[0].width += dt;
+            this.parent.cabin.doors[1].width += dt;
+        }
+    }
+
     stop(){
         if (Math.round(this.parent.cabin.cabin.y) === this.task.button.y) {    
             this.onNeedFloor = true;
             this.currentFloor = this.task;
-            this.task.button.tint = 0xFFD700;
-            setTimeout(()=> {this.onNeedFloor = false; }, 1000);
+            this.task.button.tint = 0xFFFFFF;
+            setTimeout(()=> {this.onNeedFloor = false; this.open = false}, 2000);
             this.currentQueue().shift();
         }
     }
 
-    update(dt: any) {
+    update(dt: number) {
         if (this.task.floor > this.currentFloor.floor){
             this.parent.cabin.cabin.y -= dt;
+            this.parent.cabin.doors[0].y -= dt;
+            this.parent.cabin.doors[1].y -= dt;
         } 
 
         if (this.task.floor < this.currentFloor.floor){
             this.parent.cabin.cabin.y += dt;
+            this.parent.cabin.doors[0].y += dt;
+            this.parent.cabin.doors[1].y += dt;
         }
     }
 }
